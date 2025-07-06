@@ -1,0 +1,38 @@
+# -------------------
+# Archivos del sistema
+# -------------------
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+~$*
+
+# -------------------
+# Backend (Laravel)
+# -------------------
+Reposos-API/.env
+Reposos-API/.env.*
+Reposos-API/phpunit.xml
+Reposos-API/phpunit.cache
+Reposos-API/.phpunit.result.cache
+Reposos-API/storage/*.key
+Reposos-API/public/storage
+Reposos-API/storage/framework/*
+Reposos-API/storage/logs/*
+Reposos-API/public/hot
+Reposos-API/public/build
+Reposos-API/vendor/
+Reposos-API/node_modules/
+Reposos-API/composer.lock
+Reposos-API/npm-debug.log
+Reposos-API/yarn-error.log
+Reposos-API/Homestead.json
+Reposos-API/Homestead.yaml
+Reposos-API/auth.json
+Reposos-API/.fleet
+Reposos-API/.idea
+Reposos-API/.vscode
