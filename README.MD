@@ -1,4 +1,4 @@
-# Sistema Nacional de Gestión de Reposos Médicos - API (Laravel) 🩺🏥
+# Sistema Nacional de Gestión de Reposos Médicos 🩺🏥
 
 ![Laravel 10](https://img.shields.io/badge/Laravel-10-red.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791.svg)
