@@ -36,3 +36,55 @@ Reposos-API/auth.json
 Reposos-API/.fleet
 Reposos-API/.idea
 Reposos-API/.vscode
+
+# -------------------
+# Frontend (React)
+# -------------------
+
+# Dependencias
+# La carpeta node_modules contiene miles de archivos y se puede reinstalar
+# fácilmente con 'npm install' o 'yarn install'. NUNCA debe subirse.
+Frontend/node_modules
+
+# Archivos de compilación
+# Estos archivos se generan automáticamente al construir el proyecto para producción.
+Frontend/build
+Frontend/dist
+
+# Archivos de entorno
+# Contienen claves de API, contraseñas y otras variables sensibles.
+# Es una muy mala práctica de seguridad subirlos a un repositorio público.
+Frontend/.env
+Frontend/.env.local
+Frontend/.env.development.local
+Frontend/.env.test.local
+Frontend/.env.production.local
+
+# Archivos de log
+# Generados por npm, yarn o node en caso de errores.
+Frontend/npm-debug.log*
+Frontend/yarn-debug.log*
+Frontend/yarn-error.log*
+Frontend/pnpm-debug.log*
+
+# Archivos de caché y temporales
+Frontend/.npm
+Frontend/.pnp.*
+
+# Archivos del editor de código
+# Configuraciones locales de tu editor que no son necesarias para otros desarrolladores.
+Frontend/.idea
+Frontend/.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Archivos de cobertura de tests
+# Generados al ejecutar pruebas de código.
+/coverage
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
