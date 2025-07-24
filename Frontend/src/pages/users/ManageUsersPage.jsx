@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useHeader } from '../context/HeaderContext';
+import { useAuth } from '../../context/AuthContext';
+import { useHeader } from '../../context/HeaderContext';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Search, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -20,7 +20,8 @@ const useDebounce = (value, delay) => {
 
 const ManageUsersPage = () => {
     const { setHeader } = useHeader();
-    const { getUsers, deleteUser } = useAuth();
+    // 1. Obtenemos el usuario actual del contexto de autenticación
+    const { getUsers, deleteUser, user: currentUser } = useAuth();
     const [users, setUsers] = useState([]);
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -42,13 +43,15 @@ const ManageUsersPage = () => {
         };
         const result = await getUsers(params);
         if (result.success) {
-            setUsers(result.data);
+            // 2. Filtramos la lista de usuarios para excluir al usuario actual
+            const filteredData = result.data.filter(user => user.id !== currentUser.id);
+            setUsers(filteredData);
             setPagination(result.meta);
         } else {
             setError(result.message);
         }
         setLoading(false);
-    }, [getUsers]);
+    }, [getUsers, currentUser]); // 3. Añadimos currentUser a las dependencias
 
     useEffect(() => {
         setHeader({
@@ -115,24 +118,21 @@ const ManageUsersPage = () => {
                             <th className="p-3 text-sm font-semibold tracking-wide">Nombre</th>
                             <th className="p-3 text-sm font-semibold tracking-wide hidden md:table-cell">Email</th>
                             <th className="p-3 text-sm font-semibold tracking-wide hidden lg:table-cell">Especialidad</th>
-                            <th className="p-3 text-sm font-semibold tracking-wide hidden lg:table-cell">Hospital</th>
                             <th className="p-3 text-sm font-semibold tracking-wide">Estado</th>
                             <th className="p-3 text-sm font-semibold tracking-wide">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan="6" className="text-center p-4">Cargando...</td></tr>
+                            <tr><td colSpan="5" className="text-center p-4">Cargando...</td></tr>
                         ) : error ? (
-                            <tr><td colSpan="6" className="text-center p-4 text-red-500">{error}</td></tr>
+                            <tr><td colSpan="5" className="text-center p-4 text-red-500">{error}</td></tr>
                         ) : (
                             users.map(user => (
                                 <tr key={user.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                     <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">{user.name}</td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{user.email}</td>
-                                    {/* FIX: Se muestra directamente la propiedad 'specialty' y 'hospital' que ya son strings */}
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden lg:table-cell">{user.specialty || 'N/A'}</td>
-                                    <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden lg:table-cell">{user.hospital || 'N/A'}</td>
                                     <td className="p-3 text-sm">
                                         <span className={`p-1.5 text-xs font-medium uppercase tracking-wider rounded-lg ${user.is_active ? 'bg-green-200 text-green-800 dark:bg-green-800/50 dark:text-green-300' : 'bg-red-200 text-red-800 dark:bg-red-800/50 dark:text-red-300'}`}>
                                             {user.is_active ? 'Activo' : 'Inactivo'}

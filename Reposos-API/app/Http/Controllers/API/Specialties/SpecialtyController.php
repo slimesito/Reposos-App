@@ -31,6 +31,8 @@ class SpecialtyController extends Controller
             $query->with('pathologies');
         }
 
+        $query->orderBy('id');
+
         $perPage = $request->query('per_page', 15);
         $paginated = $query->paginate($perPage)->appends($request->query());
 

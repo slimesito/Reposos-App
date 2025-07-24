@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useHeader } from '../context/HeaderContext';
@@ -25,40 +25,46 @@ const Sidebar = ({ isSidebarOpen }) => {
     };
 
     return (
-        <aside className={`bg-white dark:bg-gray-800/50 backdrop-blur-sm h-full flex flex-col transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-0 overflow-hidden'}`}>
-            <div className="flex items-center justify-center p-6 border-b border-gray-200 dark:border-gray-700">
+        // --- FIX: Se aplica el fondo semi-transparente a todo el sidebar ---
+        <aside className={`h-full flex flex-col bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-0 overflow-hidden'}`}>
+            {/* 1. Cabecera del Sidebar con un fondo SÓLIDO explícito para que no sea opaco */}
+            <div className="flex items-center justify-center p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                  <BriefcaseMedical className="text-blue-500" size={32} />
                  <h1 className="ml-3 text-2xl font-bold text-gray-800 dark:text-white">Reposos</h1>
             </div>
-            <nav className="flex-1 p-4">
-                <NavLink to="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" />
-                <NavLink to="/reposos" icon={<FileText size={20} />} text="Reposos" />
-                <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
-                
-                {user?.is_admin && (
-                    <div>
-                        <button onClick={() => setIsUsersMenuOpen(!isUsersMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-                            <div className="flex items-center">
-                                <Users size={20} />
-                                <span className="ml-4 font-medium">Usuarios</span>
-                            </div>
-                            <ChevronDown className={`transition-transform ${isUsersMenuOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        {isUsersMenuOpen && (
-                            <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
-                                <NavLink to="/users/register" icon={<UserRoundPlus />} text="Registrar" isSubmenu />
+
+            {/* 2. El resto del sidebar hereda la transparencia */}
+            <div className="flex-1 flex flex-col overflow-y-auto">
+                <nav className="flex-1 p-4">
+                    <NavLink to="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" />
+                    <NavLink to="/reposos" icon={<FileText size={20} />} text="Reposos" />
+                    <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
+                    
+                    {user?.is_admin && (
+                        <div>
+                            <button onClick={() => setIsUsersMenuOpen(!isUsersMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <div className="flex items-center">
+                                    <Users size={20} />
+                                    <span className="ml-4 font-medium">Usuarios</span>
+                                </div>
+                                <ChevronDown className={`transition-transform ${isUsersMenuOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {isUsersMenuOpen && (
+                                <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
+                                    <NavLink to="/users/register" icon={<UserRoundPlus />} text="Registrar" isSubmenu />
                                 <NavLink to="/users" icon={<UserRoundCog />} text="Gestionar" isSubmenu />
-                            </div>
-                        )}
-                    </div>
-                )}
-                
-                <NavLink to="/hospitals" icon={<Hospital size={20} />} text="Hospitales" />
-                <NavLink to="/specialties" icon={<Stethoscope size={20} />} text="Especialidades" />
-                <NavLink to="/pathologies" icon={<HeartPulse size={20} />} text="Patologías" />
-            </nav>
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                <NavLink to="/profile" icon={<User size={20} />} text="Mi Perfil" />
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    <NavLink to="/hospitals" icon={<Hospital size={20} />} text="Hospitales" />
+                    <NavLink to="/specialties" icon={<Stethoscope size={20} />} text="Especialidades" />
+                    <NavLink to="/pathologies" icon={<HeartPulse size={20} />} text="Patologías" />
+                </nav>
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <NavLink to="/profile" icon={<User size={20} />} text="Mi Perfil" />
+                </div>
             </div>
         </aside>
     );
@@ -67,6 +73,21 @@ const Sidebar = ({ isSidebarOpen }) => {
 const Header = ({ toggleSidebar }) => {
     const { user, logout } = useAuth();
     const { header } = useHeader();
+    const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
+    const profileMenuRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+                setProfileMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const storageBaseUrl = 'http://localhost:8000';
     let profilePictureUrl = `https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=0D8ABC&color=fff`;
 
@@ -79,7 +100,7 @@ const Header = ({ toggleSidebar }) => {
     }
 
     return (
-        <header className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-4 flex items-center justify-between shadow-sm">
+        <header className="relative z-30 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-4 flex items-center justify-between shadow-sm">
             <button onClick={toggleSidebar} className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden">
                 <Menu size={24} />
             </button>
@@ -87,24 +108,56 @@ const Header = ({ toggleSidebar }) => {
                 <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">{header.title}</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{header.subtitle}</p>
             </div>
+            
             <div className="flex items-center space-x-4">
                 <ThemeSwitcher />
-                <div className="relative">
-                    <img
-                        src={profilePictureUrl}
-                        alt="Foto de perfil"
-                        onError={(e) => { 
-                            e.target.onerror = null; 
-                            e.target.src=`https://ui-avatars.com/api/?name=${user?.name || 'U'}&background=E91E63&color=fff`;
-                        }}
-                        className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white dark:ring-gray-800"></span>
+                
+                <div className="relative" ref={profileMenuRef}>
+                    <button 
+                        onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
+                        className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    >
+                        <div className="relative">
+                            <img
+                                src={profilePictureUrl}
+                                alt="Foto de perfil"
+                                onError={(e) => { 
+                                    e.target.onerror = null; 
+                                    e.target.src=`https://ui-avatars.com/api/?name=${user?.name || 'U'}&background=E91E63&color=fff`;
+                                }}
+                                className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white dark:ring-gray-800"></span>
+                        </div>
+                        <span className="font-medium text-base text-gray-700 dark:text-gray-200 hidden sm:block">
+                            {user?.name}
+                        </span>
+                        <ChevronDown size={16} className="text-gray-500 hidden sm:block" />
+                    </button>
+
+                    {isProfileMenuOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-20">
+                            <Link
+                                to="/profile"
+                                onClick={() => setProfileMenuOpen(false)}
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                <User size={16} className="mr-3" />
+                                Mi Perfil
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    setProfileMenuOpen(false);
+                                    logout();
+                                }}
+                                className="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                <LogOut size={16} className="mr-3" />
+                                Cerrar Sesión
+                            </button>
+                        </div>
+                    )}
                 </div>
-                <button onClick={logout} className="flex items-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-red-800/50 hover:text-red-500 dark:hover:text-red-400 transition-colors">
-                    <LogOut size={20} />
-                    <span className="ml-2 hidden sm:inline">Cerrar Sesión</span>
-                </button>
             </div>
         </header>
     );

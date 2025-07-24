@@ -119,15 +119,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const getSpecialties = async () => {
-        try {
-            const response = await apiClient.get('/specialties');
-            return { success: true, data: response.data.data || response.data };
-        } catch (error) {
-            return { success: false, message: 'Error al obtener las especialidades.' };
-        }
-    };
-
     const getHospitals = async (params = {}) => {
         try {
             const response = await apiClient.get('/hospitals', { params });
@@ -209,6 +200,42 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const getSpecialties = async (params = {}) => {
+        try {
+            const response = await apiClient.get('/specialties', { params });
+            return { success: true, data: response.data.data || response.data, meta: response.data.meta };
+        } catch (error) {
+            return { success: false, message: 'Error al obtener las especialidades.' };
+        }
+    };
+
+    const addSpecialty = async (specialtyData) => {
+        try {
+            const response = await apiClient.post('/specialties', specialtyData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al añadir la especialidad.' };
+        }
+    };
+
+    const updateSpecialty = async (specialtyId, specialtyData) => {
+        try {
+            const response = await apiClient.put(`/specialties/${specialtyId}`, specialtyData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al actualizar la especialidad.' };
+        }
+    };
+
+    const deleteSpecialty = async (specialtyId) => {
+        try {
+            const response = await apiClient.delete(`/specialties/${specialtyId}`);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al eliminar la especialidad.' };
+        }
+    };
+
     const value = useMemo(() => ({
         user,
         token,
@@ -221,7 +248,6 @@ export const AuthProvider = ({ children }) => {
         registerUser,
         updateUser,
         deleteUser,
-        getSpecialties,
         getHospitals,
         addHospital,
         updateHospital,
@@ -231,6 +257,10 @@ export const AuthProvider = ({ children }) => {
         addPathology,
         updatePathology,
         deletePathology,
+        getSpecialties,
+        addSpecialty,
+        updateSpecialty,
+        deleteSpecialty,
     }), [user, token, loading]);
 
     return (

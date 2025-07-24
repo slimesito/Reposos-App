@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { useHeader } from '../context/HeaderContext';
-// Este componente será muy similar a EditUserPage, podrías crear un UserForm reutilizable en el futuro.
-// Por ahora, lo mantenemos separado por claridad.
-import UserForm from '../components/UserForm';
+// FIX: La ruta ahora sube dos niveles (../../) para encontrar la carpeta 'context'
+import { useHeader } from '../../context/HeaderContext';
+// FIX: La ruta ahora sube dos niveles (../../) para encontrar la carpeta 'components'
+import UserForm from '../../components/UserForm';
 
 const RegisterUserPage = () => {
     const { setHeader } = useHeader();
