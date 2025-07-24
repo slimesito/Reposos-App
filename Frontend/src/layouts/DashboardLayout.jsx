@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useHeader } from '../context/HeaderContext'; // 1. Importa el hook del Header
+import { useHeader } from '../context/HeaderContext';
 import ThemeSwitcher from '../components/ui/ThemeSwitcher';
 import {
     LayoutDashboard, LogOut, User, Stethoscope, Users, FileText,
-    Hospital, BriefcaseMedical, Menu
+    Hospital, BriefcaseMedical, Menu, ChevronDown, FileUser // 1. Se importa el nuevo ícono
 } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen }) => {
     const location = useLocation();
+    const { user } = useAuth();
+    const [isUsersMenuOpen, setIsUsersMenuOpen] = useState(false);
 
-    const NavLink = ({ to, icon, text }) => {
+    const NavLink = ({ to, icon, text, isSubmenu = false }) => {
         const isActive = location.pathname === to;
         return (
-            <Link to={to} className={`flex items-center p-3 my-1 rounded-lg transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+            <Link to={to} className={`flex items-center p-3 my-1 rounded-lg transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'} ${isSubmenu ? 'pl-10' : ''}`}>
                 {icon}
                 <span className="ml-4 font-medium">{text}</span>
             </Link>
@@ -30,7 +32,28 @@ const Sidebar = ({ isSidebarOpen }) => {
             <nav className="flex-1 p-4">
                 <NavLink to="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" />
                 <NavLink to="/reposos" icon={<FileText size={20} />} text="Reposos" />
-                <NavLink to="/pacientes" icon={<Users size={20} />} text="Pacientes" />
+                
+                {user?.is_admin && (
+                    <div>
+                        <button onClick={() => setIsUsersMenuOpen(!isUsersMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <div className="flex items-center">
+                                <Users size={20} />
+                                <span className="ml-4 font-medium">Usuarios</span>
+                            </div>
+                            <ChevronDown className={`transition-transform ${isUsersMenuOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {isUsersMenuOpen && (
+                            <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
+                                <NavLink to="/users/register" icon={<></>} text="Registrar" isSubmenu />
+                                <NavLink to="/users" icon={<></>} text="Gestionar" isSubmenu />
+                            </div>
+                        )}
+                    </div>
+                )}
+                
+                {/* 2. Se reemplaza el ícono de 'Users' por 'FileUser' */}
+                <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
+                
                 <NavLink to="/hospitales" icon={<Hospital size={20} />} text="Hospitales" />
                 <NavLink to="/especialidades" icon={<Stethoscope size={20} />} text="Especialidades" />
             </nav>
@@ -43,7 +66,7 @@ const Sidebar = ({ isSidebarOpen }) => {
 
 const Header = ({ toggleSidebar }) => {
     const { user, logout } = useAuth();
-    const { header } = useHeader(); // 2. Consume el contexto
+    const { header } = useHeader();
     const storageBaseUrl = 'http://localhost:8000';
     let profilePictureUrl = `https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=0D8ABC&color=fff`;
 
@@ -60,13 +83,10 @@ const Header = ({ toggleSidebar }) => {
             <button onClick={toggleSidebar} className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden">
                 <Menu size={24} />
             </button>
-            
-            {/* 3. Muestra el título y subtítulo dinámicos del contexto */}
             <div className="hidden md:block">
                 <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">{header.title}</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{header.subtitle}</p>
             </div>
-
             <div className="flex items-center space-x-4">
                 <ThemeSwitcher />
                 <div className="relative">
