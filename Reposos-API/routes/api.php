@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\UserManagementController;
 use App\Http\Controllers\API\Auth\UserProfileController;
+use App\Http\Controllers\API\Cities\CityController;
 use App\Http\Controllers\API\Pathologies\PathologyController;
 use App\Http\Controllers\API\Hospitals\HospitalController;
 use App\Http\Controllers\API\Patients\PatientController;
@@ -52,4 +53,7 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::post   ('/specialties',              [SpecialtyController::class, 'store']);
     Route::put    ('/specialties/{specialty}',  [SpecialtyController::class, 'update']);
     Route::delete ('/specialties/{specialty}',  [SpecialtyController::class, 'destroy']);
+
+    // City management routes
+    Route::get('/cities', [CityController::class, 'index']);
 });

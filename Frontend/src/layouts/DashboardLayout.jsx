@@ -5,7 +5,8 @@ import { useHeader } from '../context/HeaderContext';
 import ThemeSwitcher from '../components/ui/ThemeSwitcher';
 import {
     LayoutDashboard, LogOut, User, Stethoscope, Users, FileText,
-    Hospital, BriefcaseMedical, Menu, ChevronDown, FileUser // 1. Se importa el nuevo ícono
+    Hospital, BriefcaseMedical, Menu, ChevronDown, FileUser,
+    HeartPulse, UserRoundPlus, UserRoundCog
 } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen }) => {
@@ -32,6 +33,7 @@ const Sidebar = ({ isSidebarOpen }) => {
             <nav className="flex-1 p-4">
                 <NavLink to="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" />
                 <NavLink to="/reposos" icon={<FileText size={20} />} text="Reposos" />
+                <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
                 
                 {user?.is_admin && (
                     <div>
@@ -44,18 +46,16 @@ const Sidebar = ({ isSidebarOpen }) => {
                         </button>
                         {isUsersMenuOpen && (
                             <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
-                                <NavLink to="/users/register" icon={<></>} text="Registrar" isSubmenu />
-                                <NavLink to="/users" icon={<></>} text="Gestionar" isSubmenu />
+                                <NavLink to="/users/register" icon={<UserRoundPlus />} text="Registrar" isSubmenu />
+                                <NavLink to="/users" icon={<UserRoundCog />} text="Gestionar" isSubmenu />
                             </div>
                         )}
                     </div>
                 )}
                 
-                {/* 2. Se reemplaza el ícono de 'Users' por 'FileUser' */}
-                <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
-                
-                <NavLink to="/hospitales" icon={<Hospital size={20} />} text="Hospitales" />
-                <NavLink to="/especialidades" icon={<Stethoscope size={20} />} text="Especialidades" />
+                <NavLink to="/hospitals" icon={<Hospital size={20} />} text="Hospitales" />
+                <NavLink to="/specialties" icon={<Stethoscope size={20} />} text="Especialidades" />
+                <NavLink to="/pathologies" icon={<HeartPulse size={20} />} text="Patologías" />
             </nav>
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
                 <NavLink to="/profile" icon={<User size={20} />} text="Mi Perfil" />

@@ -122,20 +122,90 @@ export const AuthProvider = ({ children }) => {
     const getSpecialties = async () => {
         try {
             const response = await apiClient.get('/specialties');
-            // FIX: Extraemos el arreglo del objeto 'data' o usamos la respuesta directamente.
             return { success: true, data: response.data.data || response.data };
         } catch (error) {
             return { success: false, message: 'Error al obtener las especialidades.' };
         }
     };
 
-    const getHospitals = async () => {
+    const getHospitals = async (params = {}) => {
         try {
-            const response = await apiClient.get('/hospitals');
-            // FIX: Hacemos lo mismo para los hospitales.
-            return { success: true, data: response.data.data || response.data };
+            const response = await apiClient.get('/hospitals', { params });
+            return { success: true, data: response.data.data || response.data, meta: response.data.meta };
         } catch (error) {
             return { success: false, message: 'Error al obtener los hospitales.' };
+        }
+    };
+
+    const addHospital = async (hospitalData) => {
+        try {
+            const response = await apiClient.post('/hospitals', hospitalData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al añadir el hospital.' };
+        }
+    };
+
+    const updateHospital = async (hospitalId, hospitalData) => {
+        try {
+            const response = await apiClient.put(`/hospitals/${hospitalId}`, hospitalData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al actualizar el hospital.' };
+        }
+    };
+
+    const deleteHospital = async (hospitalId) => {
+        try {
+            const response = await apiClient.delete(`/hospitals/${hospitalId}`);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al eliminar el hospital.' };
+        }
+    };
+
+    const getCities = async () => {
+        try {
+            const response = await apiClient.get('/cities');
+            return { success: true, data: response.data.data || response.data };
+        } catch (error) {
+            return { success: false, message: 'Error al obtener las ciudades.' };
+        }
+    };
+
+    const getPathologies = async (params = {}) => {
+        try {
+            const response = await apiClient.get('/pathologies', { params });
+            return { success: true, data: response.data.data, meta: response.data.meta };
+        } catch (error) {
+            return { success: false, message: 'Error al obtener las patologías.' };
+        }
+    };
+
+    const addPathology = async (pathologyData) => {
+        try {
+            const response = await apiClient.post('/pathologies', pathologyData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al añadir la patología.' };
+        }
+    };
+
+    const updatePathology = async (pathologyId, pathologyData) => {
+        try {
+            const response = await apiClient.put(`/pathologies/${pathologyId}`, pathologyData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al actualizar la patología.' };
+        }
+    };
+
+    const deletePathology = async (pathologyId) => {
+        try {
+            const response = await apiClient.delete(`/pathologies/${pathologyId}`);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al eliminar la patología.' };
         }
     };
 
@@ -153,6 +223,14 @@ export const AuthProvider = ({ children }) => {
         deleteUser,
         getSpecialties,
         getHospitals,
+        addHospital,
+        updateHospital,
+        deleteHospital,
+        getCities,
+        getPathologies,
+        addPathology,
+        updatePathology,
+        deletePathology,
     }), [user, token, loading]);
 
     return (

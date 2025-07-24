@@ -36,6 +36,8 @@ class PathologyController extends Controller
             $query->where('days', $v);
         }
 
+        $query->orderBy('id');
+
         $perPage = (int)$request->query('per_page', 15);
         $pags = $query->paginate($perPage)->appends($request->query());
 

@@ -32,6 +32,8 @@ class HospitalController extends Controller
             $query->where('city_id', $city);
         }
 
+        $query->orderBy('id'); // Ordena por id
+
         $perPage = (int)$request->query('per_page', 15);
         $hospitals = $query->paginate($perPage)->appends($request->query());
 
