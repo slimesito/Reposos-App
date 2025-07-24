@@ -282,6 +282,31 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const getDashboardData = async () => {
+        try {
+            // Promise.all nos permite hacer todas las peticiones en paralelo para mayor eficiencia
+            const [statsRes, monthlyRes, specialtyRes, recentRes] = await Promise.all([
+                apiClient.get('/dashboard/stats'),
+                apiClient.get('/dashboard/monthly-reposos'),
+                apiClient.get('/dashboard/specialty-distribution'),
+                apiClient.get('/dashboard/recent-reposos'),
+            ]);
+
+            return {
+                success: true,
+                data: {
+                    stats: statsRes.data,
+                    monthlyData: monthlyRes.data,
+                    specialtyData: specialtyRes.data,
+                    recentReposos: recentRes.data,
+                }
+            };
+        } catch (error) {
+            console.error("Error al obtener los datos del dashboard:", error);
+            return { success: false, message: 'No se pudieron cargar las estadísticas del dashboard.' };
+        }
+    };
+
     const value = useMemo(() => ({
         user, token, isLoggedIn: !!token, loading,
         login, logout, updateProfile,
@@ -293,6 +318,7 @@ export const AuthProvider = ({ children }) => {
         getReposos, addReposo,
         getPatients,
         findCiudadanoByCedula,
+        getDashboardData,
     }), [user, token, loading]);
 
     return (

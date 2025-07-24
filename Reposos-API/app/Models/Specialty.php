@@ -27,4 +27,13 @@ class Specialty extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * --- FIX: Se añade la relación que faltaba ---
+     * Una especialidad puede tener muchos reposos.
+     */
+    public function reposos()
+    {
+        return $this->hasMany(Reposo::class);
+    }
 }

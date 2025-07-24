@@ -72,7 +72,7 @@ function App() {
             <Route path="/specialties/edit/:specialtyId" element={<AdminRoute><DashboardLayout><EditSpecialtyPage /></DashboardLayout></AdminRoute>} />
 
             {/* --- Ruta para Pacientes (Protegida para cualquier usuario logueado) --- */}
-            <Route path="/pacientes" element={<AdminRoute><DashboardLayout><ManagePatientsPage /></DashboardLayout></AdminRoute>} />
+            <Route path="/pacientes" element={<ProtectedRoute><DashboardLayout><ManagePatientsPage /></DashboardLayout></ProtectedRoute>} />
 
             {/* --- Rutas para Reposos (Protegidas) --- */}
             <Route path="/reposos" element={<ProtectedRoute><DashboardLayout><ManageRepososPage /></DashboardLayout></ProtectedRoute>} />

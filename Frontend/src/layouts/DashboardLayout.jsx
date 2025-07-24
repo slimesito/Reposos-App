@@ -6,16 +6,19 @@ import ThemeSwitcher from '../components/ui/ThemeSwitcher';
 import {
     LayoutDashboard, LogOut, User, Stethoscope, Users, FileText,
     Hospital, BriefcaseMedical, Menu, ChevronDown, FileUser, HeartPulse,
-    UserRoundPlus, UserRoundCog
+    UserRoundPlus, UserRoundCog, FilePlus2, ListChecks // 1. Se importan nuevos íconos
 } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen }) => {
     const location = useLocation();
     const { user } = useAuth();
     const [isUsersMenuOpen, setIsUsersMenuOpen] = useState(false);
+    // 2. Se añade un estado para el nuevo menú de Reposos
+    const [isRepososMenuOpen, setIsRepososMenuOpen] = useState(false);
 
     const NavLink = ({ to, icon, text, isSubmenu = false }) => {
-        const isActive = location.pathname.startsWith(to);
+        // Se ajusta la lógica para que el menú padre se mantenga activo
+        const isActive = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
         return (
             <Link to={to} className={`flex items-center p-3 my-1 rounded-lg transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'} ${isSubmenu ? 'pl-10' : ''}`}>
                 {icon}
@@ -33,12 +36,28 @@ const Sidebar = ({ isSidebarOpen }) => {
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <nav className="flex-1 p-4">
                     <NavLink to="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" />
-                    <NavLink to="/reposos" icon={<FileText size={20} />} text="Reposos" />
                     
-                    {/* --- FIX: Se agrupan todos los enlaces de administrador --- */}
+                    {/* --- FIX: Se convierte el botón de Reposos en un menú desplegable --- */}
+                    <div>
+                        <button onClick={() => setIsRepososMenuOpen(!isRepososMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <div className="flex items-center">
+                                <FileText size={20} />
+                                <span className="ml-4 font-medium">Reposos</span>
+                            </div>
+                            <ChevronDown className={`transition-transform ${isRepososMenuOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {isRepososMenuOpen && (
+                            <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
+                                <NavLink to="/reposos/register" icon={<FilePlus2 size={18} />} text="Registrar un Reposo" isSubmenu />
+                                <NavLink to="/reposos" icon={<ListChecks size={18} />} text="Listado de Reposos" isSubmenu />
+                            </div>
+                        )}
+                    </div>
+
+                    <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
+                    
                     {user?.is_admin && (
                         <>
-                            <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
                             <div>
                                 <button onClick={() => setIsUsersMenuOpen(!isUsersMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                                     <div className="flex items-center">
@@ -61,9 +80,6 @@ const Sidebar = ({ isSidebarOpen }) => {
                         </>
                     )}
                 </nav>
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                    <NavLink to="/profile" icon={<User size={20} />} text="Mi Perfil" />
-                </div>
             </div>
         </aside>
     );
