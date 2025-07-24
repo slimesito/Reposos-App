@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, [token]);
 
+    // --- Autenticación y Perfil ---
     const login = async (email, password) => {
         try {
             const response = await apiClient.post('/login', { email, password });
@@ -78,6 +79,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Gestión de Usuarios ---
     const getUsers = async (params = {}) => {
         try {
             const response = await apiClient.get('/users', { params });
@@ -86,30 +88,23 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al obtener los usuarios.' };
         }
     };
-
     const registerUser = async (formData) => {
         try {
-            const response = await apiClient.post('/register', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            const response = await apiClient.post('/register', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
             return { success: true, message: response.data.message };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Error al registrar el usuario.' };
         }
     };
-
     const updateUser = async (userId, formData) => {
         formData.append('_method', 'PUT');
         try {
-            const response = await apiClient.post(`/users/${userId}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            const response = await apiClient.post(`/users/${userId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
             return { success: true, message: response.data.message };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Error al actualizar el usuario.' };
         }
     };
-
     const deleteUser = async (userId) => {
         try {
             const response = await apiClient.delete(`/users/${userId}`);
@@ -119,6 +114,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Gestión de Hospitales ---
     const getHospitals = async (params = {}) => {
         try {
             const response = await apiClient.get('/hospitals', { params });
@@ -127,7 +123,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: 'Error al obtener los hospitales.' };
         }
     };
-
     const addHospital = async (hospitalData) => {
         try {
             const response = await apiClient.post('/hospitals', hospitalData);
@@ -136,7 +131,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al añadir el hospital.' };
         }
     };
-
     const updateHospital = async (hospitalId, hospitalData) => {
         try {
             const response = await apiClient.put(`/hospitals/${hospitalId}`, hospitalData);
@@ -145,7 +139,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al actualizar el hospital.' };
         }
     };
-
     const deleteHospital = async (hospitalId) => {
         try {
             const response = await apiClient.delete(`/hospitals/${hospitalId}`);
@@ -155,6 +148,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Gestión de Ciudades ---
     const getCities = async () => {
         try {
             const response = await apiClient.get('/cities');
@@ -164,6 +158,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Gestión de Patologías ---
     const getPathologies = async (params = {}) => {
         try {
             const response = await apiClient.get('/pathologies', { params });
@@ -172,7 +167,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: 'Error al obtener las patologías.' };
         }
     };
-
     const addPathology = async (pathologyData) => {
         try {
             const response = await apiClient.post('/pathologies', pathologyData);
@@ -181,7 +175,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al añadir la patología.' };
         }
     };
-
     const updatePathology = async (pathologyId, pathologyData) => {
         try {
             const response = await apiClient.put(`/pathologies/${pathologyId}`, pathologyData);
@@ -190,7 +183,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al actualizar la patología.' };
         }
     };
-
     const deletePathology = async (pathologyId) => {
         try {
             const response = await apiClient.delete(`/pathologies/${pathologyId}`);
@@ -200,6 +192,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Gestión de Especialidades ---
     const getSpecialties = async (params = {}) => {
         try {
             const response = await apiClient.get('/specialties', { params });
@@ -208,7 +201,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: 'Error al obtener las especialidades.' };
         }
     };
-
     const addSpecialty = async (specialtyData) => {
         try {
             const response = await apiClient.post('/specialties', specialtyData);
@@ -217,7 +209,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al añadir la especialidad.' };
         }
     };
-
     const updateSpecialty = async (specialtyId, specialtyData) => {
         try {
             const response = await apiClient.put(`/specialties/${specialtyId}`, specialtyData);
@@ -226,7 +217,6 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: error.response?.data?.message || 'Error al actualizar la especialidad.' };
         }
     };
-
     const deleteSpecialty = async (specialtyId) => {
         try {
             const response = await apiClient.delete(`/specialties/${specialtyId}`);
@@ -236,31 +226,61 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Gestión de Reposos ---
+    const getReposos = async (params = {}) => {
+        try {
+            const response = await apiClient.get('/reposos', { params });
+            // La respuesta paginada de Laravel contiene 'data' para los registros y 'meta' para la paginación.
+            return { success: true, data: response.data.data, meta: response.data.meta };
+        } catch (error) {
+            return { success: false, message: 'Error al obtener los reposos.' };
+        }
+    };
+
+    const addReposo = async (reposoData) => {
+        try {
+            const response = await apiClient.post('/reposos', reposoData);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            // --- FIX: Manejo de errores mejorado ---
+            if (error.response && error.response.data) {
+                // Si la API devuelve una lista de errores de validación, los unimos.
+                if (error.response.data.errors) {
+                    const errors = error.response.data.errors;
+                    const errorMessages = Object.values(errors).flat().join(' ');
+                    return { success: false, message: errorMessages };
+                }
+                // Si la API devuelve un solo mensaje (como "El usuario no tiene hospital"), lo usamos.
+                if (error.response.data.message) {
+                    return { success: false, message: error.response.data.message };
+                }
+            }
+            // Fallback para cualquier otro tipo de error.
+            return { success: false, message: 'Ocurrió un error inesperado al registrar el reposo.' };
+        }
+    };
+
+    // --- Nueva función para obtener los pacientes ---
+    const getPatients = async () => {
+        try {
+            const response = await apiClient.get('/patients');
+            // Tu API devuelve { "patients": [...] }, así que extraemos response.data.patients
+            return { success: true, data: response.data.patients };
+        } catch (error) {
+            return { success: false, message: 'Error al obtener los pacientes.' };
+        }
+    };
+
     const value = useMemo(() => ({
-        user,
-        token,
-        isLoggedIn: !!token,
-        loading,
-        login,
-        logout,
-        updateProfile,
-        getUsers,
-        registerUser,
-        updateUser,
-        deleteUser,
-        getHospitals,
-        addHospital,
-        updateHospital,
-        deleteHospital,
+        user, token, isLoggedIn: !!token, loading,
+        login, logout, updateProfile,
+        getUsers, registerUser, updateUser, deleteUser,
+        getHospitals, addHospital, updateHospital, deleteHospital,
         getCities,
-        getPathologies,
-        addPathology,
-        updatePathology,
-        deletePathology,
-        getSpecialties,
-        addSpecialty,
-        updateSpecialty,
-        deleteSpecialty,
+        getPathologies, addPathology, updatePathology, deletePathology,
+        getSpecialties, addSpecialty, updateSpecialty, deleteSpecialty,
+        getReposos, addReposo,
+        getPatients,
     }), [user, token, loading]);
 
     return (

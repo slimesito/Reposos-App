@@ -32,6 +32,13 @@ import ManageSpecialtiesPage from './pages/ManageSpecialtiesPage';
 import AddSpecialtyPage from './pages/AddSpecialtyPage';
 import EditSpecialtyPage from './pages/EditSpecialtyPage';
 
+// Páginas de Reposos
+import ManageRepososPage from './pages/ManageRepososPage';
+import RegisterReposoPage from './pages/RegisterReposoPage';
+
+// Páginas de Pacientes
+import ManagePatientsPage from './pages/ManagePatientsPage';
+
 function App() {
     const { isLoggedIn } = useAuth();
 
@@ -63,6 +70,13 @@ function App() {
             <Route path="/specialties" element={<AdminRoute><DashboardLayout><ManageSpecialtiesPage /></DashboardLayout></AdminRoute>} />
             <Route path="/specialties/add" element={<AdminRoute><DashboardLayout><AddSpecialtyPage /></DashboardLayout></AdminRoute>} />
             <Route path="/specialties/edit/:specialtyId" element={<AdminRoute><DashboardLayout><EditSpecialtyPage /></DashboardLayout></AdminRoute>} />
+
+            {/* --- Rutas para Reposos (Protegidas) --- */}
+            <Route path="/reposos" element={<ProtectedRoute><DashboardLayout><ManageRepososPage /></DashboardLayout></ProtectedRoute>} />
+            <Route path="/reposos/register" element={<ProtectedRoute><DashboardLayout><RegisterReposoPage /></DashboardLayout></ProtectedRoute>} />
+
+            {/* --- Ruta para Pacientes (Protegida para cualquier usuario logueado) --- */}
+            <Route path="/pacientes" element={<ProtectedRoute><DashboardLayout><ManagePatientsPage /></DashboardLayout></ProtectedRoute>} />
 
             {/* Redirección por defecto para cualquier otra ruta */}
             <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />

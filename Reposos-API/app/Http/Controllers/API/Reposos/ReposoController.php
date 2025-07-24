@@ -3,44 +3,42 @@
 namespace App\Http\Controllers\API\Reposos;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ciudadano;
+use App\Http\Requests\Reposos\ReposoStoreRequest;
+use App\Http\Resources\Reposos\ReposoResource;
 use App\Models\Reposo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Http\JsonResponse;
 
 class ReposoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
     /**
      * Registrar un nuevo reposo.
      */
-    public function store(Request $request)
+    public function store(ReposoStoreRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'ciudadano_id' => ['required'],
-            'specialty_id' => ['required', 'exists:specialties,id'],
-            'pathology_id' => ['required', 'exists:pathologies,id'],
-            'start_date'   => ['required', 'date'],
-            'end_date'     => ['required', 'date', 'after_or_equal:start_date'],
-            'description'  => ['nullable', 'string'],
-            'hospital_id'  => ['required', 'exists:hospitals,id'],
-        ]);
+        $data = $request->validated();
+        $user = $request->user(); // Obtenemos el usuario autenticado
 
-        // Validación manual contra otra conexión
-        if (!Ciudadano::on('pgsql_ciudadano')->where('id', $data['ciudadano_id'])->exists()) {
-            throw ValidationException::withMessages([
-                'ciudadano_id' => ['El ciudadano no existe.']
-            ]);
+        // Verificamos que el usuario tenga un hospital asignado
+        if (!$user->hospital_id) {
+            return response()->json(['message' => 'El usuario no tiene un hospital asignado.'], 422);
         }
 
         $reposo = Reposo::create([
             ...$data,
-            'created_by' => auth()->id()
+            'created_by' => $user->id,
+            // --- FIX: Se toma el hospital_id del usuario autenticado ---
+            'hospital_id' => $user->hospital_id,
         ]);
 
         return response()->json([
             'message' => 'Reposo registrado exitosamente.',
-            'reposo'  => $reposo
+            'reposo'  => new ReposoResource($reposo->load(['specialty', 'pathology', 'hospital', 'creador'])),
         ], 201);
     }
 
@@ -50,12 +48,12 @@ class ReposoController extends Controller
     public function show($ciudadanoId)
     {
         $reposos = Reposo::where('ciudadano_id', $ciudadanoId)
-            ->with(['specialty', 'pathology', 'hospital'])
+            // Se añade 'creador' para consistencia.
+            ->with(['specialty', 'pathology', 'hospital', 'creador'])
+            ->orderBy('start_date', 'desc')
             ->get();
 
-        return response()->json([
-            'reposos' => $reposos
-        ]);
+        return ReposoResource::collection($reposos);
     }
 
     /**
@@ -63,12 +61,10 @@ class ReposoController extends Controller
      */
     public function index()
     {
-        $reposos = Reposo::with(['ciudadano', 'specialty', 'pathology', 'hospital'])
+        $reposos = Reposo::with(['ciudadano', 'specialty', 'pathology', 'hospital', 'creador'])
             ->orderBy('start_date', 'desc')
-            ->get();
+            ->paginate(15); // Se recomienda paginar para no sobrecargar el frontend.
 
-        return response()->json([
-            'reposos' => $reposos
-        ]);
+        return ReposoResource::collection($reposos);
     }
 }

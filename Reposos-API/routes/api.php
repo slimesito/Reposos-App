@@ -21,11 +21,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/profile', [UserProfileController::class, 'update']);
 
     // Reposos routes
+    Route::get('/reposos', [ReposoController::class, 'index']);
     Route::post('/reposos', [ReposoController::class, 'store']);
 
     // Patient routes
     Route::get('/patients',         [PatientController::class, 'index']);
     Route::get('/patients/{id}',    [PatientController::class, 'show']);
+
+    // Other routes
+    Route::get    ('/hospitals',      [HospitalController::class, 'index']);
+    Route::get    ('/pathologies',    [PathologyController::class, 'index']);
+    Route::get    ('/specialties',    [SpecialtyController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
@@ -37,23 +43,20 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::delete   ('/users/{user}',   [UserManagementController::class, 'destroy']);
 
     // Hospital management routes
-    Route::get      ('/hospitals',              [HospitalController::class, 'index']);
     Route::post     ('/hospitals',              [HospitalController::class, 'store']);
     Route::put      ('/hospitals/{hospital}',   [HospitalController::class, 'update']);
     Route::delete   ('/hospitals/{hospital}',   [HospitalController::class, 'destroy']);
 
     // Pathology management routes
-    Route::get    ('/pathologies',              [PathologyController::class, 'index']);
     Route::post   ('/pathologies',              [PathologyController::class, 'store']);
     Route::put    ('/pathologies/{pathology}',  [PathologyController::class, 'update']);
     Route::delete ('/pathologies/{pathology}',  [PathologyController::class, 'destroy']);
 
     // Specialty management routes
-    Route::get    ('/specialties',              [SpecialtyController::class, 'index']);
     Route::post   ('/specialties',              [SpecialtyController::class, 'store']);
     Route::put    ('/specialties/{specialty}',  [SpecialtyController::class, 'update']);
     Route::delete ('/specialties/{specialty}',  [SpecialtyController::class, 'destroy']);
 
-    // City management routes
+    // City route
     Route::get('/cities', [CityController::class, 'index']);
 });
