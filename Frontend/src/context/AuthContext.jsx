@@ -264,8 +264,9 @@ export const AuthProvider = ({ children }) => {
     const getPatients = async () => {
         try {
             const response = await apiClient.get('/patients');
-            // Tu API devuelve { "patients": [...] }, así que extraemos response.data.patients
-            return { success: true, data: response.data.patients };
+            // Un Resource Collection devuelve { "data": [...] }.
+            // Añadimos `response.data.patients` como fallback por si se usa la ruta antigua.
+            return { success: true, data: response.data.data || response.data.patients };
         } catch (error) {
             return { success: false, message: 'Error al obtener los pacientes.' };
         }

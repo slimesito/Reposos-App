@@ -5,8 +5,8 @@ import { useHeader } from '../context/HeaderContext';
 import ThemeSwitcher from '../components/ui/ThemeSwitcher';
 import {
     LayoutDashboard, LogOut, User, Stethoscope, Users, FileText,
-    Hospital, BriefcaseMedical, Menu, ChevronDown, FileUser,
-    HeartPulse, UserRoundPlus, UserRoundCog
+    Hospital, BriefcaseMedical, Menu, ChevronDown, FileUser, HeartPulse,
+    UserRoundPlus, UserRoundCog
 } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen }) => {
@@ -15,7 +15,7 @@ const Sidebar = ({ isSidebarOpen }) => {
     const [isUsersMenuOpen, setIsUsersMenuOpen] = useState(false);
 
     const NavLink = ({ to, icon, text, isSubmenu = false }) => {
-        const isActive = location.pathname === to;
+        const isActive = location.pathname.startsWith(to);
         return (
             <Link to={to} className={`flex items-center p-3 my-1 rounded-lg transition-colors ${isActive ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'} ${isSubmenu ? 'pl-10' : ''}`}>
                 {icon}
@@ -25,42 +25,41 @@ const Sidebar = ({ isSidebarOpen }) => {
     };
 
     return (
-        // --- FIX: Se aplica el fondo semi-transparente a todo el sidebar ---
         <aside className={`h-full flex flex-col bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-0 overflow-hidden'}`}>
-            {/* 1. Cabecera del Sidebar con un fondo SÓLIDO explícito para que no sea opaco */}
             <div className="flex items-center justify-center p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                  <BriefcaseMedical className="text-blue-500" size={32} />
                  <h1 className="ml-3 text-2xl font-bold text-gray-800 dark:text-white">Reposos</h1>
             </div>
-
-            {/* 2. El resto del sidebar hereda la transparencia */}
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <nav className="flex-1 p-4">
                     <NavLink to="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" />
                     <NavLink to="/reposos" icon={<FileText size={20} />} text="Reposos" />
-                    <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
                     
+                    {/* --- FIX: Se agrupan todos los enlaces de administrador --- */}
                     {user?.is_admin && (
-                        <div>
-                            <button onClick={() => setIsUsersMenuOpen(!isUsersMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-                                <div className="flex items-center">
-                                    <Users size={20} />
-                                    <span className="ml-4 font-medium">Usuarios</span>
-                                </div>
-                                <ChevronDown className={`transition-transform ${isUsersMenuOpen ? 'rotate-180' : ''}`} />
-                            </button>
-                            {isUsersMenuOpen && (
-                                <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
-                                    <NavLink to="/users/register" icon={<UserRoundPlus />} text="Registrar" isSubmenu />
-                                <NavLink to="/users" icon={<UserRoundCog />} text="Gestionar" isSubmenu />
-                                </div>
-                            )}
-                        </div>
+                        <>
+                            <NavLink to="/pacientes" icon={<FileUser size={20} />} text="Pacientes" />
+                            <div>
+                                <button onClick={() => setIsUsersMenuOpen(!isUsersMenuOpen)} className="w-full flex items-center justify-between p-3 my-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                    <div className="flex items-center">
+                                        <Users size={20} />
+                                        <span className="ml-4 font-medium">Usuarios</span>
+                                    </div>
+                                    <ChevronDown className={`transition-transform ${isUsersMenuOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                {isUsersMenuOpen && (
+                                    <div className="ml-4 border-l-2 border-gray-200 dark:border-gray-600">
+                                        <NavLink to="/users/register" icon={<UserRoundPlus />} text="Registrar" isSubmenu />
+                                        <NavLink to="/users" icon={<UserRoundCog />} text="Gestionar" isSubmenu />
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <NavLink to="/hospitals" icon={<Hospital size={20} />} text="Hospitales" />
+                            <NavLink to="/specialties" icon={<Stethoscope size={20} />} text="Especialidades" />
+                            <NavLink to="/pathologies" icon={<HeartPulse size={20} />} text="Patologías" />
+                        </>
                     )}
-                    
-                    <NavLink to="/hospitals" icon={<Hospital size={20} />} text="Hospitales" />
-                    <NavLink to="/specialties" icon={<Stethoscope size={20} />} text="Especialidades" />
-                    <NavLink to="/pathologies" icon={<HeartPulse size={20} />} text="Patologías" />
                 </nav>
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700">
                     <NavLink to="/profile" icon={<User size={20} />} text="Mi Perfil" />

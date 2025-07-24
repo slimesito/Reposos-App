@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useHeader } from '../context/HeaderContext';
-import SpecialtyForm from '../components/SpecialtyForm';
+import { useHeader } from '../../context/HeaderContext';
+import SpecialtyForm from '../../components/SpecialtyForm';
 
 const AddSpecialtyPage = () => {
     const { setHeader } = useHeader();

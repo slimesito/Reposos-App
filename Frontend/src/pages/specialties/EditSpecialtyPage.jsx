@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { useHeader } from '../context/HeaderContext';
-import SpecialtyForm from '../components/SpecialtyForm';
+import { useHeader } from '../../context/HeaderContext';
+import SpecialtyForm from '../../components/SpecialtyForm';
 
 const EditSpecialtyPage = () => {
     const { setHeader } = useHeader();

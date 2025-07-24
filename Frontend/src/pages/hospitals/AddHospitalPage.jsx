@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useHeader } from '../context/HeaderContext';
-import HospitalForm from '../components/HospitalForm';
+import { useHeader } from '../../context/HeaderContext';
+import HospitalForm from '../../components/HospitalForm';
 
 const AddHospitalPage = () => {
     const { setHeader } = useHeader();

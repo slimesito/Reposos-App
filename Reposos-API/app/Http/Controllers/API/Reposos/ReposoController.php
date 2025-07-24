@@ -8,6 +8,7 @@ use App\Http\Resources\Reposos\ReposoResource;
 use App\Models\Reposo;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ReposoController extends Controller
 {
@@ -44,26 +45,43 @@ class ReposoController extends Controller
 
     /**
      * Mostrar el historial de reposos de un ciudadano.
+     * - Si el usuario es admin, ve todos los reposos del ciudadano.
+     * - Si no es admin, solo ve los reposos que él mismo creó para ese ciudadano.
      */
     public function show($ciudadanoId)
     {
-        $reposos = Reposo::where('ciudadano_id', $ciudadanoId)
-            // Se añade 'creador' para consistencia.
-            ->with(['specialty', 'pathology', 'hospital', 'creador'])
-            ->orderBy('start_date', 'desc')
-            ->get();
+        $user = Auth::user();
+        $query = Reposo::where('ciudadano_id', $ciudadanoId)
+            ->with(['specialty', 'pathology', 'hospital', 'creador']);
+
+        // --- FIX: Se añade la condición de seguridad ---
+        if (!$user->is_admin) {
+            $query->where('created_by', $user->id);
+        }
+
+        $reposos = $query->orderBy('start_date', 'desc')->get();
 
         return ReposoResource::collection($reposos);
     }
 
     /**
-     * Listar todos los reposos.
+     * Listar reposos.
+     * - Si el usuario es admin, lista todos los reposos del sistema.
+     * - Si no es admin, lista únicamente los reposos creados por él.
      */
     public function index()
     {
-        $reposos = Reposo::with(['ciudadano', 'specialty', 'pathology', 'hospital', 'creador'])
-            ->orderBy('start_date', 'desc')
-            ->paginate(15); // Se recomienda paginar para no sobrecargar el frontend.
+        $user = Auth::user(); // 2. Obtenemos el usuario autenticado
+        $query = Reposo::with(['ciudadano', 'specialty', 'pathology', 'hospital', 'creador']);
+
+        // --- FIX: Se añade la condición de seguridad ---
+        // 3. Si el usuario NO es administrador, filtramos por su ID.
+        if (!$user->is_admin) {
+            $query->where('created_by', $user->id);
+        }
+
+        $reposos = $query->orderBy('start_date', 'desc')
+            ->paginate(15);
 
         return ReposoResource::collection($reposos);
     }

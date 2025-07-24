@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useHeader } from '../context/HeaderContext';
+import { useAuth } from '../../context/AuthContext';
+import { useHeader } from '../../context/HeaderContext';
 import { Link } from 'react-router-dom';
 import { Search, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 

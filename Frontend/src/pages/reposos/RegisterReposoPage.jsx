@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useHeader } from '../context/HeaderContext';
+import { useAuth } from '../../context/AuthContext';
+import { useHeader } from '../../context/HeaderContext';
 import { useNavigate } from 'react-router-dom';
 import { User, Stethoscope, HeartPulse, Calendar, FileText } from 'lucide-react';
 

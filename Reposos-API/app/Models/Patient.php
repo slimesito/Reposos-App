@@ -19,10 +19,16 @@ class Patient extends Model
         'last_hospital_id'
     ];
 
-    // Relación con Ciudadano (en otro esquema)
+    /**
+     * Relación con Ciudadano (en otro esquema)
+     *
+     * --- FIX: Se especifican las claves foránea y local ---
+     * Le decimos a Laravel: "La columna 'ciudadano_id' de esta tabla (Patient)
+     * se conecta con la columna 'cedula' de la tabla Ciudadano".
+     */
     public function ciudadano(): BelongsTo
     {
-        return $this->belongsTo(Ciudadano::class);
+        return $this->belongsTo(Ciudadano::class, 'ciudadano_id', 'id');
     }
 
     // Relación con último reposo

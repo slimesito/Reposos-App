@@ -18,23 +18,23 @@ import RegisterUserPage from './pages/users/RegisterUserPage';
 import EditUserPage from './pages/users/EditUserPage';
 
 // Páginas de Hospitales
-import ManageHospitalsPage from './pages/ManageHospitalsPage';
-import AddHospitalPage from './pages/AddHospitalPage';
-import EditHospitalPage from './pages/EditHospitalPage';
+import ManageHospitalsPage from './pages/hospitals/ManageHospitalsPage';
+import AddHospitalPage from './pages/hospitals/AddHospitalPage';
+import EditHospitalPage from './pages/hospitals/EditHospitalPage';
 
 // Páginas de Patologías
-import ManagePathologiesPage from './pages/ManagePathologiesPage';
-import AddPathologyPage from './pages/AddPathologyPage';
-import EditPathologyPage from './pages/EditPathologyPage';
+import ManagePathologiesPage from './pages/pathologies/ManagePathologiesPage';
+import AddPathologyPage from './pages/pathologies/AddPathologyPage';
+import EditPathologyPage from './pages/pathologies/EditPathologyPage';
 
 // Páginas de Especialidades
-import ManageSpecialtiesPage from './pages/ManageSpecialtiesPage';
-import AddSpecialtyPage from './pages/AddSpecialtyPage';
-import EditSpecialtyPage from './pages/EditSpecialtyPage';
+import ManageSpecialtiesPage from './pages/specialties/ManageSpecialtiesPage';
+import AddSpecialtyPage from './pages/specialties/AddSpecialtyPage';
+import EditSpecialtyPage from './pages/specialties/EditSpecialtyPage';
 
 // Páginas de Reposos
-import ManageRepososPage from './pages/ManageRepososPage';
-import RegisterReposoPage from './pages/RegisterReposoPage';
+import ManageRepososPage from './pages/reposos/ManageRepososPage';
+import RegisterReposoPage from './pages/reposos/RegisterReposoPage';
 
 // Páginas de Pacientes
 import ManagePatientsPage from './pages/ManagePatientsPage';
@@ -71,12 +71,12 @@ function App() {
             <Route path="/specialties/add" element={<AdminRoute><DashboardLayout><AddSpecialtyPage /></DashboardLayout></AdminRoute>} />
             <Route path="/specialties/edit/:specialtyId" element={<AdminRoute><DashboardLayout><EditSpecialtyPage /></DashboardLayout></AdminRoute>} />
 
+            {/* --- Ruta para Pacientes (Protegida para cualquier usuario logueado) --- */}
+            <Route path="/pacientes" element={<AdminRoute><DashboardLayout><ManagePatientsPage /></DashboardLayout></AdminRoute>} />
+
             {/* --- Rutas para Reposos (Protegidas) --- */}
             <Route path="/reposos" element={<ProtectedRoute><DashboardLayout><ManageRepososPage /></DashboardLayout></ProtectedRoute>} />
             <Route path="/reposos/register" element={<ProtectedRoute><DashboardLayout><RegisterReposoPage /></DashboardLayout></ProtectedRoute>} />
-
-            {/* --- Ruta para Pacientes (Protegida para cualquier usuario logueado) --- */}
-            <Route path="/pacientes" element={<ProtectedRoute><DashboardLayout><ManagePatientsPage /></DashboardLayout></ProtectedRoute>} />
 
             {/* Redirección por defecto para cualquier otra ruta */}
             <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />

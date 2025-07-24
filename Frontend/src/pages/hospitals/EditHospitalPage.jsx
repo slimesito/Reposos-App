@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { useHeader } from '../context/HeaderContext';
-import HospitalForm from '../components/HospitalForm';
+import { useHeader } from '../../context/HeaderContext';
+import HospitalForm from '../../components/HospitalForm';
 
 const EditHospitalPage = () => {
     const { setHeader } = useHeader();

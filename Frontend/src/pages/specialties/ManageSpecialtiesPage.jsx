@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useHeader } from '../context/HeaderContext';
+import { useAuth } from '../../context/AuthContext';
+import { useHeader } from '../../context/HeaderContext';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Search, PlusCircle, ChevronLeft, ChevronRight, HeartPulse } from 'lucide-react';
+import { Pencil, Trash2, Search, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -13,10 +13,10 @@ const useDebounce = (value, delay) => {
     return debouncedValue;
 };
 
-const ManagePathologiesPage = () => {
+const ManageSpecialtiesPage = () => {
     const { setHeader } = useHeader();
-    const { getPathologies, deletePathology } = useAuth();
-    const [pathologies, setPathologies] = useState([]);
+    const { getSpecialties, deleteSpecialty } = useAuth();
+    const [specialties, setSpecialties] = useState([]);
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -25,36 +25,36 @@ const ManagePathologiesPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-    const fetchPathologies = useCallback(async (page, search) => {
+    const fetchSpecialties = useCallback(async (page, search) => {
         setLoading(true);
         setError('');
         const params = { page, name: search };
-        const result = await getPathologies(params);
+        const result = await getSpecialties(params);
         if (result.success) {
-            setPathologies(result.data);
+            setSpecialties(result.data);
             setPagination(result.meta);
         } else {
             setError(result.message);
         }
         setLoading(false);
-    }, [getPathologies]);
+    }, [getSpecialties]);
 
     useEffect(() => {
         setHeader({
-            title: 'Gestionar Patologías',
-            subtitle: 'Añade, edita y administra las patologías del sistema.'
+            title: 'Gestionar Especialidades',
+            subtitle: 'Añade, edita y administra las especialidades médicas.'
         });
     }, [setHeader]);
 
     useEffect(() => {
-        fetchPathologies(currentPage, debouncedSearchTerm);
-    }, [currentPage, debouncedSearchTerm, fetchPathologies]);
+        fetchSpecialties(currentPage, debouncedSearchTerm);
+    }, [currentPage, debouncedSearchTerm, fetchSpecialties]);
 
-    const handleDelete = async (pathologyId) => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar esta patología?')) {
-            const result = await deletePathology(pathologyId);
+    const handleDelete = async (specialtyId) => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar esta especialidad?')) {
+            const result = await deleteSpecialty(specialtyId);
             if (result.success) {
-                fetchPathologies(currentPage, debouncedSearchTerm);
+                fetchSpecialties(currentPage, debouncedSearchTerm);
             } else {
                 alert(`Error: ${result.message}`);
             }
@@ -74,9 +74,9 @@ const ManagePathologiesPage = () => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-                <Link to="/pathologies/add" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <Link to="/specialties/add" className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                     <PlusCircle size={20} className="mr-2" />
-                    Añadir Patología
+                    Añadir Especialidad
                 </Link>
             </div>
 
@@ -84,28 +84,26 @@ const ManagePathologiesPage = () => {
                 <table className="w-full text-left">
                     <thead className="border-b-2 border-gray-200 dark:border-gray-700">
                         <tr>
+                            <th className="p-3 text-sm font-semibold tracking-wide">ID</th>
                             <th className="p-3 text-sm font-semibold tracking-wide">Nombre</th>
-                            <th className="p-3 text-sm font-semibold tracking-wide hidden md:table-cell">Especialidad</th>
-                            <th className="p-3 text-sm font-semibold tracking-wide">Días de Reposo</th>
                             <th className="p-3 text-sm font-semibold tracking-wide">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan="4" className="text-center p-4">Cargando...</td></tr>
+                            <tr><td colSpan="3" className="text-center p-4">Cargando...</td></tr>
                         ) : error ? (
-                            <tr><td colSpan="4" className="text-center p-4 text-red-500">{error}</td></tr>
+                            <tr><td colSpan="3" className="text-center p-4 text-red-500">{error}</td></tr>
                         ) : (
-                            pathologies.map(pathology => (
-                                <tr key={pathology.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">{pathology.name}</td>
-                                    <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{pathology.specialty?.name || 'N/A'}</td>
-                                    <td className="p-3 text-sm text-gray-700 dark:text-gray-300">{pathology.days}</td>
+                            specialties.map(specialty => (
+                                <tr key={specialty.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td className="p-3 text-sm text-gray-700 dark:text-gray-300">{specialty.id}</td>
+                                    <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">{specialty.name}</td>
                                     <td className="p-3 text-sm flex gap-2">
-                                        <Link to={`/pathologies/edit/${pathology.id}`} state={{ pathology }} className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full">
+                                        <Link to={`/specialties/edit/${specialty.id}`} state={{ specialty }} className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full">
                                             <Pencil size={18} />
                                         </Link>
-                                        <button onClick={() => handleDelete(pathology.id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-full">
+                                        <button onClick={() => handleDelete(specialty.id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-full">
                                             <Trash2 size={18} />
                                         </button>
                                     </td>
@@ -132,4 +130,4 @@ const ManagePathologiesPage = () => {
     );
 };
 
-export default ManagePathologiesPage;
+export default ManageSpecialtiesPage;

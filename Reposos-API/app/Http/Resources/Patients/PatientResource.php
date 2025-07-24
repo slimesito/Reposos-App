@@ -20,13 +20,16 @@ class PatientResource extends JsonResource
             'id' => $this->id,
             'ciudadano_id' => $this->ciudadano_id,
 
-            // Incluimos el objeto completo del ciudadano
-            'ciudadano' => [
-                'id' => $this->ciudadano->cedula, // Usando la cédula como ID
-                'name' => $this->ciudadano->name, // Usando el accessor para el nombre completo
-            ],
+            // Incluye el objeto del ciudadano si fue cargado
+            'ciudadano' => $this->whenLoaded('ciudadano', function () {
+                return [
+                    'id' => $this->ciudadano->id,
+                    // Esto usa el accessor 'name' de tu modelo Ciudadano para el nombre completo
+                    'name' => $this->ciudadano->name,
+                ];
+            }),
 
-            // Incluimos las relaciones cargadas
+            // Incluye el hospital y los reposos si fueron cargados
             'lastHospital' => new HospitalResource($this->whenLoaded('lastHospital')),
             'reposos' => ReposoResource::collection($this->whenLoaded('reposos')),
         ];
