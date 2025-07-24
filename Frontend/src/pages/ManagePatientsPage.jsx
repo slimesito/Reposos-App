@@ -23,8 +23,16 @@ const ManagePatientsPage = () => {
         const fetchPatients = async () => {
             setLoading(true);
             const result = await getPatients();
+            
+            console.log("Respuesta de la API para getPatients:", result);
+
             if (result.success) {
-                setAllPatients(Array.isArray(result.data) ? result.data : []);
+                const data = Array.isArray(result.data) ? result.data : [];
+                setAllPatients(data);
+                
+                if (data.length > 0) {
+                    console.log("Estructura del primer paciente recibido:", data[0]);
+                }
             } else {
                 setError(result.message);
                 setAllPatients([]);
@@ -34,11 +42,11 @@ const ManagePatientsPage = () => {
         fetchPatients();
     }, [setHeader, getPatients]);
 
-    // Lógica de filtrado y paginación del lado del cliente
     const filteredPatients = useMemo(() => {
         if (!searchTerm) return allPatients;
         return allPatients.filter(patient => 
-            patient.ciudadano?.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+            // --- FIX: La búsqueda ahora usa la cédula ---
+            patient.ciudadano?.cedula?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
             patient.ciudadano?.name?.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [allPatients, searchTerm]);
@@ -86,7 +94,8 @@ const ManagePatientsPage = () => {
                         ) : currentPatients.length > 0 ? (
                             currentPatients.map(patient => (
                                 <tr key={patient.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">{patient.ciudadano?.id || 'N/A'}</td>
+                                    {/* --- FIX: Se muestra la cédula en lugar del id --- */}
+                                    <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">{patient.ciudadano?.cedula || 'N/A'}</td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300">{patient.ciudadano?.name || 'No disponible'}</td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{patient.lastHospital?.name || 'N/A'}</td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300">{patient.reposos?.length || 0}</td>

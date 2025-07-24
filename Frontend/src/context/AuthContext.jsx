@@ -272,6 +272,16 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // --- Nueva función para buscar ciudadanos ---
+    const findCiudadanoByCedula = async (cedula) => {
+        try {
+            const response = await apiClient.get(`/ciudadanos/find-by-cedula/${cedula}`);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Error al buscar el ciudadano.' };
+        }
+    };
+
     const value = useMemo(() => ({
         user, token, isLoggedIn: !!token, loading,
         login, logout, updateProfile,
@@ -282,6 +292,7 @@ export const AuthProvider = ({ children }) => {
         getSpecialties, addSpecialty, updateSpecialty, deleteSpecialty,
         getReposos, addReposo,
         getPatients,
+        findCiudadanoByCedula,
     }), [user, token, loading]);
 
     return (

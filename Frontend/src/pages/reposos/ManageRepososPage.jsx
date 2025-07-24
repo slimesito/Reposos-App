@@ -4,7 +4,6 @@ import { useHeader } from '../../context/HeaderContext';
 import { Link } from 'react-router-dom';
 import { Search, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Hook de Debounce para no buscar en cada tecleo
 const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
     useEffect(() => {
@@ -26,15 +25,16 @@ const ManageRepososPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-    // --- FIX: La función ahora pide a la API la página y el término de búsqueda correctos ---
     const fetchReposos = useCallback(async (page, search) => {
         setLoading(true);
         setError('');
-        const params = { page, ciudadano_id: search }; // Asumiendo que la API busca por 'ciudadano_id'
+        // La API de Laravel espera 'ciudadano_id' para el filtro, pero podemos buscar por nombre también si la API lo soporta.
+        // Por ahora, asumimos que la búsqueda es por cédula.
+        const params = { page, ciudadano_id: search }; 
         const result = await getReposos(params);
         if (result.success) {
             setReposos(Array.isArray(result.data) ? result.data : []);
-            setPagination(result.meta); // Guardamos la información de paginación
+            setPagination(result.meta);
         } else {
             setError(result.message);
             setReposos([]);
@@ -49,7 +49,6 @@ const ManageRepososPage = () => {
         });
     }, [setHeader]);
 
-    // Este efecto se dispara cuando cambia la página o el término de búsqueda
     useEffect(() => {
         fetchReposos(currentPage, debouncedSearchTerm);
     }, [currentPage, debouncedSearchTerm, fetchReposos]);
@@ -71,7 +70,7 @@ const ManageRepososPage = () => {
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
-                            setCurrentPage(1); // Volver a la página 1 al buscar
+                            setCurrentPage(1);
                         }}
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -102,7 +101,10 @@ const ManageRepososPage = () => {
                         ) : reposos.length > 0 ? (
                             reposos.map(reposo => (
                                 <tr key={reposo.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">{reposo.ciudadano_id}</td>
+                                    {/* --- FIX: Se muestra la cédula desde el objeto ciudadano --- */}
+                                    <td className="p-3 text-sm font-bold text-gray-800 dark:text-white">
+                                        {reposo.ciudadano?.cedula || reposo.ciudadano_id}
+                                    </td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{reposo.pathology?.name || 'N/A'}</td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300 hidden lg:table-cell">{reposo.specialty?.name || 'N/A'}</td>
                                     <td className="p-3 text-sm text-gray-700 dark:text-gray-300">{formatDate(reposo.start_date)}</td>
@@ -121,7 +123,6 @@ const ManageRepososPage = () => {
                 </table>
             </div>
 
-            {/* --- FIX: La paginación ahora usa los datos del 'meta' object de la API --- */}
             {pagination && pagination.total > 0 && (
                 <div className="flex justify-between items-center mt-6">
                     <span className="text-sm text-gray-600 dark:text-gray-400">

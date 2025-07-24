@@ -4,6 +4,7 @@ use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\UserManagementController;
 use App\Http\Controllers\API\Auth\UserProfileController;
 use App\Http\Controllers\API\Cities\CityController;
+use App\Http\Controllers\API\Ciudadanos\CiudadanoController;
 use App\Http\Controllers\API\Pathologies\PathologyController;
 use App\Http\Controllers\API\Hospitals\HospitalController;
 use App\Http\Controllers\API\Patients\PatientController;
@@ -27,6 +28,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Patient routes
     Route::get('/patients',         [PatientController::class, 'index']);
     Route::get('/patients/{id}',    [PatientController::class, 'show']);
+
+    // --- Nueva ruta para buscar ciudadanos por cédula ---
+    Route::get('/ciudadanos/find-by-cedula/{cedula}', [CiudadanoController::class, 'findByCedula']);
 
     // Other routes
     Route::get    ('/hospitals',      [HospitalController::class, 'index']);
